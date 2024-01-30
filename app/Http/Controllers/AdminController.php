@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Faker\Core\Number;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Ramsey\Uuid\Fields\SerializableFieldsTrait;
 
 class AdminController extends Controller
 {
@@ -44,5 +46,30 @@ class AdminController extends Controller
         $user = User::find($id);
         $user->delete();
         return redirect("admin");
+    }
+    public function user_create(Request $request){
+        if ($request->method() == "GET") {
+            return view("admin/user/create");
+        }
+        $data = $request->all();
+        $validation = Validator::make($data, [
+            'name' => ['required', 'string', 'min:8', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', "string", 'min:8', 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/',  'confirmed'],  # https://stackoverflow.com/questions/31539727/laravel-password-validation-rule
+        ], [
+            'unique' => 'The :attribute already been registered.',
+            'regex'  => 'The :attribute must be hard.',
+        ]);
+        if ($validation->fails()) {
+            return redirect()->back()->withInput()->withErrors($validation);
+        } else {
+            User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
+            return redirect("admin");
+        }
+        
     }
 }

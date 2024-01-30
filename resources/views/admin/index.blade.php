@@ -36,7 +36,7 @@
             <br>
             <div class="card bg-light">
                 <div class="card-body">
-                    <button type="button" class="btn btn-outline-secondary">Create User</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="user_create_window()">Create User</button>
                     <button type="button" class="btn btn-outline-secondary">Create Subject</button>
                     <button type="button" class="btn btn-outline-secondary">Assign the subject</button>
                     <button type="button" class="btn btn-outline-secondary">Set Mark</button>
@@ -71,6 +71,9 @@
 <script>
 function edit_window(id){
     window.open(`/admin/user/${id}`,'mywindow','width=800,height=400')
+};
+function user_create_window(id){
+    window.open(`/admin/user`,'mywindow','width=800,height=400')
 };
 function delete_user(id) {
     element = document.getElementById("delete_user");
