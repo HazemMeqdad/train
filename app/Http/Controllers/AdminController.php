@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Faker\Core\Number;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Ramsey\Uuid\Fields\SerializableFieldsTrait;
 
 class AdminController extends Controller
 {
