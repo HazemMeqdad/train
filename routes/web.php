@@ -19,4 +19,6 @@ Route::view('/', "index");
 Auth::routes();
 
 Route::get("/admin", [App\Http\Controllers\AdminController::class, "index"])->name("admin");
+Route::get("/admin/user/{id}", [App\Http\Controllers\AdminController::class, "get_user"])->name("user.get");
+Route::post("/admin/user/{id}", [App\Http\Controllers\AdminController::class, "edit_user"])->name("user.edit");
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

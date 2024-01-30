@@ -24,7 +24,7 @@
                                 <td>{{ $user->email }}</td>
                                 <td>math, english</td>
                                 <td>
-                                    <button id="edit" type="button" class="btn btn-secondary btn-sm">Edit</button>
+                                    <button id="edit" type="button" class="btn btn-secondary btn-sm" onclick="edit_window({{ $user->id }})">Edit</button>
                                     <button type="button" class="btn btn-danger btn-sm">Delete</button>
                                 </td>
                             </tr>
@@ -47,11 +47,9 @@
 </div>
 <script src='https://code.jquery.com/jquery-1.8.2.js'></script>
 <script>
-$(function () {
-          $('#edit').click(function(){
-              window.open('/index','mywindow','width=400,height=200,toolbar=yes,location=yes,directories=yes,status=yes,menubar=yes,scrollbars=yes,copyhistory=yes,resizable=yes')
-          });
-      });
+function edit_window(id){
+    window.open(`/admin/user/${id}`,'mywindow','width=800,height=400')
+};
 </script>
 
 @endsection
