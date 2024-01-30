@@ -40,4 +40,9 @@ class AdminController extends Controller
             return view("admin/user/edit", ["user"=>$user]);
         }
     }
+    public function delete_user(int $id = null) {
+        $user = User::find($id);
+        $user->delete();
+        return redirect("admin");
+    }
 }
