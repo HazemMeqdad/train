@@ -46,9 +46,6 @@ class AdminController extends Controller
         return redirect("admin");
     }
     public function user_create(Request $request){
-        if ($request->method() == "GET") {
-            return view("admin/user/create");
-        }
         $data = $request->all();
         $validation = Validator::make($data, [
             'name' => ['required', 'string', 'min:8', 'max:255'],
@@ -59,14 +56,14 @@ class AdminController extends Controller
             'regex'  => 'The :attribute must be hard.',
         ]);
         if ($validation->fails()) {
-            return redirect()->back()->withInput()->withErrors($validation);
+            return response()->json(["errors"=>$validation->errors()], 422);;
         } else {
             User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
             ]);
-            return redirect("admin");
+            return response()->json(["message"=> "User created successfully"]);
         }
         
     }

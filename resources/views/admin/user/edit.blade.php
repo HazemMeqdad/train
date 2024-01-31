@@ -1,5 +1,3 @@
-@extends('layouts.app')
-@section('content')
 <div class="container">
     <div class="card text-center">
         <div class="card-header">
@@ -9,13 +7,14 @@
             <h5 class="card-title">{{ $user->name }}</h5>
             <p class="card-text">{{ $user->email }}</p>
             @if ($user->active)
-            <form action="{{ route('user.edit', [$user->id]) }}" id="myform" method="POST">
+            <form action="{{ route('user.edit', [$user->id]) }}" id="formHandler" method="POST">
                 @csrf
+                <div id="errors-list"></div>
                 <input type="hidden" value="0" name="active">
                 <input type="submit" value="Inactive" class="btn btn-danger">
             </form>
             @else
-            <form action="{{ route('user.edit', [$user->id]) }}" id="myform" method="POST">
+            <form action="{{ route('user.edit', [$user->id]) }}" id="formHandler" method="POST">
                 @csrf
                 <input type="hidden" value="1" name="active">
                 <input type="submit" value="Active" class="btn btn-success">
@@ -24,4 +23,3 @@
         </div>
     </div>
 </div>
-@endsection

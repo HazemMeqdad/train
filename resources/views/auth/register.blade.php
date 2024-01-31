@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}" id="registerHandler">
+                    <form method="POST" action="{{ route('register') }}" id="formHandler">
                         @csrf
                         <div id="errors-list"></div>
 
@@ -17,12 +17,6 @@
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
                             </div>
                         </div>
 
@@ -30,13 +24,7 @@
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autocomplete="email">
                             </div>
                         </div>
 
@@ -44,13 +32,7 @@
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <input id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
                             </div>
                         </div>
 
@@ -75,42 +57,4 @@
         </div>
     </div>
 </div>
-@endsection
-@section("js")
-<script type="text/javascript">
- 
-    $(function() {
-
-        $(document).on("submit", "#registerHandler", function() {
-            var e = this;
-    
-            $(this).find("[type='submit']").html("register...");
-    
-            $.ajax({
-                url: $(this).attr('action'),
-                data: $(this).serialize(),
-                type: "POST",
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data)
-                    window.location = data.redirect;
-                    
-                },
-                complete:function(data) {
-                    $(e).find("[type='submit']").html("register");
-                },
-                error: function(err){
-                    console.log(err)
-                    $(".alert").remove();
-                        $.each(err.responseJSON.errors, function (key, val) {
-                          $("#errors-list").append("<div class='alert alert-danger'>" + val + "</div>");
-                        });
-                    }
-                })    
-            return false;
-        });
-    
-      });
-    
-  </script>
 @endsection

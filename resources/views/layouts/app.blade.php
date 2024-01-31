@@ -85,6 +85,39 @@
         </main>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    $(function() {
+
+        $(document).on("submit", "#formHandler", function() {
+            var e = this;
+            const submit_name = $(this).find("[type='submit']").text();
+            $(this).find("[type='submit']").html(`${submit_name}...`);
+    
+            $.ajax({
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                type: "POST",
+                dataType: 'json',
+                success: function (data) {
+                    location.reload();
+                },
+                complete:function(data) {
+                    $(e).find("[type='submit']").html(submit_name);
+                },
+                error: function(err){
+                    console.log(err)
+                    $(".alert").remove();
+                        $.each(err.responseJSON.errors, function (key, val) {
+                          $("#errors-list").append("<div class='alert alert-danger'>" + val + "</div>");
+                        });
+                    }
+                })    
+            return false;
+        });
+    
+      });
+    
+    </script>
     @yield('js')
 </body>
 </html>
