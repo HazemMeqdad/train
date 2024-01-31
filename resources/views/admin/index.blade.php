@@ -22,7 +22,7 @@
                                 <th scope="row">{{ $user->id }}</th>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>math, english</td>
+                                <td>{{ $user->subjects }}</td>
                                 <td>
                                     <button type="button" class="btn btn-secondary btn-sm edit-user" data-user-id="{{ $user->id }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}" data-active="{{ $user->active }}">Edit</button>
                                     <button type="button" class="btn btn-danger btn-sm delete-user" data-user-id="{{ $user->id }}">Delete</button>
@@ -38,7 +38,9 @@
                 <div class="card-body">
                     <button type="button" class="btn btn-outline-secondary" id="create-user">Create User</button>
                     <button type="button" class="btn btn-outline-secondary" id="create-subject">Create Subject</button>
-                    <button type="button" class="btn btn-outline-secondary">Assign the subject</button>
+                    <a href="{{ route('subjects') }}">
+                        <button type="button" class="btn btn-outline-secondary">Assign subject</button>
+                    </a>
                     <button type="button" class="btn btn-outline-secondary">Set Mark</button>
                 </div>
             </div>
@@ -50,7 +52,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Delete user</h5>
-              <button type="button" class="btn-close close-delete">
+              <button type="button" class="btn-close">
           </button>
         </div>
         <div class="modal-body">
@@ -62,7 +64,7 @@
                 {{ method_field('DELETE') }}
                 <input type="submit" value="Delete" class="btn btn-danger">
             </form>
-          <button type="button" class="btn btn-secondary close-delete">Close</button>
+          <button type="button" class="btn btn-secondary button-close">Close</button>
         </div>
       </div>
     </div>
@@ -73,7 +75,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Create user</h5>
-          <button type="button" class="btn-close close-register">
+          <button type="button" class="btn-close">
         </button>
         </div>
         <div class="modal-body">
@@ -88,7 +90,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Edit user</h5>
-          <button type="button" class="btn-close close-edit">
+          <button type="button" class="btn-close">
         </button>
         </div>
         <div class="modal-body">
@@ -104,7 +106,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Create subject</h5>
-          <button type="button" class="btn-close close-subject">
+          <button type="button" class="btn-close">
         </button>
         </div>
         <div class="modal-body">
@@ -116,12 +118,13 @@
 @endsection
 @section("js")
 <script>
+const close_modal = () => {
+    $(".modal").modal("hide")
+}
+$(".button-close").on("click", close_modal);
+$('.btn-close').on('click', close_modal);
+    
 // Create user
-$('.btn-close').on('click', function () {
-    // Remove all modals
-    $(".modal").remove();
-    // Remove modal backdrop
-    $(".modal-backdrop").remove();})
 $('#create-user').on("click", () => {
     $('#register_modal').modal('toggle');
 });
@@ -133,14 +136,7 @@ $('.delete-user').on("click", (event) => {
     $("#delete_modal").find('#formHandler').attr('action', "{{ route("user.delete") }}" + `/${userid}`);
 });
 
-$(".close-delete").on('click', function () {
-    $('#delete_modal').modal('toggle');
-})
-
 // Edit user
-$(".close-edit").on('click', function () {
-    $('#edit_modal').modal('toggle');
-})
 $('.edit-user').on("click", (event) => {
     $("#edit_modal").modal("toggle");
     const userid = $(event.target).attr("data-user-id");
@@ -154,11 +150,11 @@ $('.edit-user').on("click", (event) => {
 });
 
 // Create subject 
-// $(".close-subject").on('click', function () {
-//     $('#create-subject').modal('toggle');
-// })
 $('#create-subject').on("click", (event) => {
     $("#subject_modal").modal("toggle");
 });
+
+// Assign
+$("#multiple-checkboxes")
 </script>
 @endsection

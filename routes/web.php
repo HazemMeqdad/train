@@ -20,14 +20,19 @@ Route::view('/', "index");
 Auth::routes();
 
 Route::prefix("/admin")->group(function () {
-    Route::get("/", [App\Http\Controllers\AdminController::class, "index"])->name("admin");
+    Route::get("/", [AdminController::class, "index"])->name("admin");
     
-    Route::get("/user/{id}", [App\Http\Controllers\AdminController::class, "get_user"])->name("user.get");
-    Route::post("/user/{id?}", [App\Http\Controllers\AdminController::class, "edit_user"])->name("user.edit");
-    Route::delete("/user/{id?}", [App\Http\Controllers\AdminController::class, "delete_user"])->name("user.delete");
-    Route::match(['GET', 'POST'] ,"/user", [App\Http\Controllers\AdminController::class, "user_create"])->name("user.create");
+    Route::get("/user/{id}", [AdminController::class, "get_user"])->name("user.get");
+    Route::post("/user/{id?}", [AdminController::class, "edit_user"])->name("user.edit");
+    Route::delete("/user/{id?}", [AdminController::class, "delete_user"])->name("user.delete");
+    
+    Route::post("/user-create", [AdminController::class, "create_user"])->name("user.create");
     
     Route::post("/subject", [AdminController::class, "create_subject"])->name("subject.create");
+    
+    Route::post("/subject/assign", [AdminController::class, "assign_subject"])->name("subject.assign");
+    
+    Route::get("/subjects", [AdminController::class, "get_subjects"])->name("subjects");
 });
 
 

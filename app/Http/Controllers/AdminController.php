@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mark;
 use App\Models\Subject;
 use App\Models\Subjecte;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -23,12 +25,7 @@ class AdminController extends Controller
         return view('admin/index', ['users'=>$users]);
     }
 
-    public function get_user(int $id) {
-        $user = User::find($id);
-        return view("admin/user/edit", ["user"=>$user]);
-    }
-
-    public function edit_user(Request $request, int $id) {
+    public function edit_user(Request $request, int $id = null) {
         $user = User::find($id);
         $validator = Validator::make($request->all(), [
             'name' => ['string', 'min:8', 'max:255'],
@@ -63,7 +60,7 @@ class AdminController extends Controller
         return response()->json(["message"=> "Subject created successfully"]);
     }
 
-    public function user_create(Request $request){
+    public function create_user(Request $request){
         $data = $request->all();
         $validation = Validator::make($data, [
             'name' => ['required', 'string', 'min:8', 'max:255'],
@@ -84,5 +81,29 @@ class AdminController extends Controller
             return response()->json(["message"=> "User created successfully"]);
         }
         
+    }
+
+    public function assign_subject(Request $request) {
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'id' => ['required', 'digits:1'],
+            'student_id' => ['required', 'digits:1'],
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["errors"=>$validator->errors()], 422);
+        } else {
+            Mark::create([
+                'student_id' => $data['student_id'],
+                'subject_id' => $data['id'],
+            ]);
+            return response()->json(["message"=> "Assign added successfully"]);
+        }
+    }
+
+    public function get_subjects() {
+        $subjects = Subject::all();
+        $users = User::all()->except(Auth::id());;
+        // dd($subjects);
+        return view("admin/subjects", ["users" => $users, "subjects" => $subjects]);
     }
 }

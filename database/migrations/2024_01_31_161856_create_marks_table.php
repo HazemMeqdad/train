@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("student_id"); // Use unsignedBigInteger instead of unsignedInteger
             $table->unsignedBigInteger("subject_id");
-            $table->integer("mark");
+            $table->integer("mark")->default(0);
             $table->timestamps();
         
             $table->foreign('student_id')->references('id')->on('users');
