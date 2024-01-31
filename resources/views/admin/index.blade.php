@@ -37,7 +37,7 @@
             <div class="card bg-light">
                 <div class="card-body">
                     <button type="button" class="btn btn-outline-secondary" id="create-user">Create User</button>
-                    <button type="button" class="btn btn-outline-secondary">Create Subject</button>
+                    <button type="button" class="btn btn-outline-secondary" id="create-subject">Create Subject</button>
                     <button type="button" class="btn btn-outline-secondary">Assign the subject</button>
                     <button type="button" class="btn btn-outline-secondary">Set Mark</button>
                 </div>
@@ -97,13 +97,31 @@
       </div>
     </div>
 </div>
+
+{{-- Subject modal --}}
+<div class="modal" tabindex="-1" role="dialog" id="subject_modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create subject</h5>
+          <button type="button" class="btn-close close-subject">
+        </button>
+        </div>
+        <div class="modal-body">
+          @include("admin/subject/create")
+        </div>
+      </div>
+    </div>
+</div>
 @endsection
 @section("js")
 <script>
 // Create user
-$('.close-register').on('click', function () {
-    $('#register_modal').modal('toggle');
-})
+$('.btn-close').on('click', function () {
+    // Remove all modals
+    $(".modal").remove();
+    // Remove modal backdrop
+    $(".modal-backdrop").remove();})
 $('#create-user').on("click", () => {
     $('#register_modal').modal('toggle');
 });
@@ -133,6 +151,14 @@ $('.edit-user').on("click", (event) => {
     $("#edit_modal").find("#email").val(email);
     $("#edit_modal").find("#active").val(active);
     $("#edit_modal").find("#name").val(name);
+});
+
+// Create subject 
+// $(".close-subject").on('click', function () {
+//     $('#create-subject').modal('toggle');
+// })
+$('#create-subject').on("click", (event) => {
+    $("#subject_modal").modal("toggle");
 });
 </script>
 @endsection

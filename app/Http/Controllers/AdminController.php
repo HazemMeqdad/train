@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subject;
+use App\Models\Subjecte;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -52,8 +54,13 @@ class AdminController extends Controller
         return redirect("admin");
     }
 
-    public function fetch_user(int $id) {
-        return response()->json(["message"=> "User created successfully"]);
+    public function create_subject(Request $request) {
+        $data = $request->validate([
+            "name"=> ["required", "min:1", "string"],
+            "min_mark"=> ["required", "min:0", "max:100", "numeric"],
+        ]);
+        Subject::create($data);
+        return response()->json(["message"=> "Subject created successfully"]);
     }
 
     public function user_create(Request $request){

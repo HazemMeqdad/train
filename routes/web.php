@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,7 @@ Route::prefix("/admin")->group(function () {
     Route::delete("/user/{id?}", [App\Http\Controllers\AdminController::class, "delete_user"])->name("user.delete");
     Route::match(['GET', 'POST'] ,"/user", [App\Http\Controllers\AdminController::class, "user_create"])->name("user.create");
     
+    Route::post("/subject", [AdminController::class, "create_subject"])->name("subject.create");
 });
 
 
