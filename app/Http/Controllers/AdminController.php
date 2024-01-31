@@ -29,22 +29,33 @@ class AdminController extends Controller
     public function edit_user(Request $request, int $id) {
         $user = User::find($id);
         $validator = Validator::make($request->all(), [
-            "active" => ['required', "boolean"]
+            'name' => ['string', 'min:8', 'max:255'],
+            'email' => ['string', 'email', 'max:255'],
+            'active' => ['boolean'],
+        ], [
+            'unique' => 'The :attribute already been registered.',
+            'regex'  => 'The :attribute must be hard.',
         ]);
         if($validator->fails()) {
-            return Redirect::back()->withInput()->withErrorts($validator);
+            return response()->json(["message"=> "Invlided input", "errors"=>$validator->errors()], 422);
         }
         else {
             $user->active = $request->active;
             $user->save();
-            return view("admin/user/edit", ["user"=>$user]);
+            return response()->json(["message"=>"User edit successfully"]);
         }
     }
+
     public function delete_user(int $id = null) {
         $user = User::find($id);
         $user->delete();
         return redirect("admin");
     }
+
+    public function fetch_user(int $id) {
+        return response()->json(["message"=> "User created successfully"]);
+    }
+
     public function user_create(Request $request){
         $data = $request->all();
         $validation = Validator::make($data, [
@@ -56,7 +67,7 @@ class AdminController extends Controller
             'regex'  => 'The :attribute must be hard.',
         ]);
         if ($validation->fails()) {
-            return response()->json(["errors"=>$validation->errors()], 422);;
+            return response()->json(["errors"=>$validation->errors()], 422);
         } else {
             User::create([
                 'name' => $data['name'],

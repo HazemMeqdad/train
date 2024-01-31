@@ -24,8 +24,8 @@
                                 <td>{{ $user->email }}</td>
                                 <td>math, english</td>
                                 <td>
-                                    <button type="button" class="btn btn-secondary btn-sm edit-user" data-user-id="{{ $user->id }}">Edit</button>
-                                    <button type="button" class="btn btn-danger btn-sm delete-user"data-user-id="{{ $user->id }}">Delete</button>
+                                    <button type="button" class="btn btn-secondary btn-sm edit-user" data-user-id="{{ $user->id }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}" data-active="{{ $user->active }}">Edit</button>
+                                    <button type="button" class="btn btn-danger btn-sm delete-user" data-user-id="{{ $user->id }}">Delete</button>
                                 </td>
                             </tr>
                             @endforeach
@@ -62,7 +62,7 @@
                 {{ method_field('DELETE') }}
                 <input type="submit" value="Delete" class="btn btn-danger">
             </form>
-          <button type="button" class="btn btn-secondary">Close</button>
+          <button type="button" class="btn btn-secondary close-delete">Close</button>
         </div>
       </div>
     </div>
@@ -82,9 +82,25 @@
       </div>
     </div>
 </div>
+
+<div class="modal" tabindex="-1" role="dialog" id="edit_modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit user</h5>
+          <button type="button" class="btn-close close-edit">
+        </button>
+        </div>
+        <div class="modal-body">
+          @include("admin/user/edit")
+        </div>
+      </div>
+    </div>
+</div>
 @endsection
 @section("js")
 <script>
+// Create user
 $('.close-register').on('click', function () {
     $('#register_modal').modal('toggle');
 })
@@ -92,15 +108,31 @@ $('#create-user').on("click", () => {
     $('#register_modal').modal('toggle');
 });
 
+// Delete user
 $('.delete-user').on("click", (event) => {
-    console.log("clicked")
     $("#delete_modal").modal("toggle");
     const userid = $(event.target).attr("data-user-id");
     $("#delete_modal").find('#formHandler').attr('action', "{{ route("user.delete") }}" + `/${userid}`);
 });
 
 $(".close-delete").on('click', function () {
-    $('#edit-user').modal('toggle');
+    $('#delete_modal').modal('toggle');
 })
+
+// Edit user
+$(".close-edit").on('click', function () {
+    $('#edit_modal').modal('toggle');
+})
+$('.edit-user').on("click", (event) => {
+    $("#edit_modal").modal("toggle");
+    const userid = $(event.target).attr("data-user-id");
+    const email = $(event.target).attr("data-email");
+    const active = $(event.target).attr("data-active");
+    const name = $(event.target).attr("data-name");
+    $("#edit_modal").find('#formHandler').attr('action', "{{ route("user.edit") }}" + `/${userid}`);
+    $("#edit_modal").find("#email").val(email);
+    $("#edit_modal").find("#active").val(active);
+    $("#edit_modal").find("#name").val(name);
+});
 </script>
 @endsection

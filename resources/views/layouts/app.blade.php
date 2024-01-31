@@ -99,7 +99,18 @@
                 type: "POST",
                 dataType: 'json',
                 success: function (data) {
-                    location.reload();
+                    if (!data || !data.message){
+                        location.reload();
+                        return ;
+                    }
+                    if (data.message) {
+                        // Remove all modals
+                        $(".modal").remove();
+                        // Remove modal backdrop
+                        $(".modal-backdrop").remove();
+                        location.reload();
+                    }
+
                 },
                 complete:function(data) {
                     $(e).find("[type='submit']").html(submit_name);

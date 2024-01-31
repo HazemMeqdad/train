@@ -1,25 +1,34 @@
-<div class="container">
-    <div class="card text-center">
-        <div class="card-header">
-        User Information
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">{{ $user->name }}</h5>
-            <p class="card-text">{{ $user->email }}</p>
-            @if ($user->active)
-            <form action="{{ route('user.edit', [$user->id]) }}" id="formHandler" method="POST">
-                @csrf
-                <div id="errors-list"></div>
-                <input type="hidden" value="0" name="active">
-                <input type="submit" value="Inactive" class="btn btn-danger">
-            </form>
-            @else
-            <form action="{{ route('user.edit', [$user->id]) }}" id="formHandler" method="POST">
-                @csrf
-                <input type="hidden" value="1" name="active">
-                <input type="submit" value="Active" class="btn btn-success">
-            </form>
-            @endif
+<form id="formHandler" method="POST" action="{{ route('user.create') }}">
+    @csrf
+    <div id="errors-list"></div>
+
+    <div class="row mb-3">
+        <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
+
+        <div class="col-md-6">
+            <input id="name" type="text" class="form-control" name="name" value="" required autocomplete="name" autofocus>
         </div>
     </div>
-</div>
+
+    <div class="row mb-3">
+        <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
+
+        <div class="col-md-6">
+            <input id="email" type="email" class="form-control" name="email" value="" required autocomplete="email">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="active" class="col-md-4 col-form-label text-md-end">{{ __('Active') }}</label>
+
+        <div class="col-md-6">
+            <input class="form-check-input" type="checkbox" value="" name="active" id="active">
+
+        </div>
+    </div>
+
+    <div class="row mb-0">
+        <div class="col-md-6 offset-md-4">
+            <input type="submit" class="btn btn-primary" value="Edit">
+        </div>
+    </div>
+</form>
