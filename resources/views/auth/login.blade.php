@@ -8,9 +8,9 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login') }}" id="LoginHandle">
                         @csrf
-
+                        <div id="errors-list"></div>
                         <div class="row mb-3">
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
 
@@ -70,4 +70,43 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section("js")
+<script type="text/javascript">
+ 
+    $(function() {
+
+        $(document).on("submit", "#LoginHandle", function() {
+            var e = this;
+    
+            $(this).find("[type='submit']").html("Login...");
+    
+            $.ajax({
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                type: "POST",
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    window.location = data.redirect;
+                    
+                },
+                complete:function(data) {
+                    $(e).find("[type='submit']").html("Login");
+                },
+                error: function(err){
+                    console.log(err)
+                    $(".alert").remove();
+                        $.each(err.responseJSON.errors, function (key, val) {
+                          $("#errors-list").append("<div class='alert alert-danger'>" + val + "</div>");
+                        });
+                    }
+                })    
+            return false;
+        });
+    
+      });
+    
+  </script>
 @endsection
