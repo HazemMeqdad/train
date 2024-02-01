@@ -38,8 +38,6 @@
                   <input type="text" id="message" name="message" class="form-control" placeholder="Enter message..." aria-label="Enter message..." aria-describedby="button-addon2">
                   <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Send</button>
                 </div>
-                {{-- <input type="text" id="message" name="message" placeholder="Enter message..." autocomplete="off">
-                <button type="submit"></button> --}}
               </form>
             </div>
             <!-- End Footer -->
