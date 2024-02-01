@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Mark;
 use App\Models\Subject;
-use App\Models\Subjecte;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
@@ -29,9 +27,9 @@ class AdminController extends Controller
     public function edit_user(Request $request, int $id = null) {
         $user = User::find($id);
         $validator = Validator::make($request->all(), [
-            'name' => ['string', 'min:8', 'max:255'],
-            'email' => ['string', 'email', 'max:255'],
-            'active' => ['boolean'],
+            'name' => ["required", 'string', 'min:8', 'max:255'],
+            'email' => ["required", 'string', 'email', 'max:255'],
+            'active' => ["required", 'boolean'],
         ], [
             'unique' => 'The :attribute already been registered.',
             'regex'  => 'The :attribute must be hard.',
@@ -87,8 +85,8 @@ class AdminController extends Controller
     public function assign_subject(Request $request) {
         $data = $request->all();
         $validator = Validator::make($data, [
-            'id' => ['required', 'digits:1'],
-            'student_id' => ['required', 'digits:1'],
+            'id' => ['required', 'integer'],
+            'student_id' => ['required', 'integer'],
         ]);
         if ($validator->fails()) {
             return response()->json(["errors"=>$validator->errors()], 422);
