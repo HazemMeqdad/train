@@ -44,19 +44,21 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-// In your Mark model
-public function subject()
-{
-    return $this->belongsTo(Subject::class, 'subject_id');
-}
+    // In your Mark model
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
 
-// In your User model
-public function subjects()
-{
-    return $this->hasMany(Mark::class, 'student_id')->with('subject');
-}
-    // public function marks() 
-    // {
-    //     return $this->hasMany(Mark::class);
-    // }
+    // In your User model
+    public function subjects()
+    {
+        return $this->hasMany(Mark::class, 'student_id')->with('subject');
+    }
+    
+    public function getGravatarAttribute()
+    {
+        $hash = md5(strtolower(trim($this->attributes['email'])));
+        return "http://www.gravatar.com/avatar/$hash";
+    }
 }
