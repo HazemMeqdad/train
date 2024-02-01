@@ -23,8 +23,13 @@
 
           <!-- Chat -->
           <div class="messages">
-            @include('chat/receive', ["user" => Auth::user(), 'message' => "Hey! What's up!  👋"])
-            @include('chat/receive', ["user" => Auth::user(), 'message' => "Ask a friend to open this link and you can chat with them!"])
+            @foreach($messages as $message)
+              @if ($message->user->id == Auth::user()->id)
+                @include('chat/broadcast', ["user" => $message->user, 'message' => $message->content])
+              @else
+                @include('chat/receive', ["user" => $message->user, 'message' => $message->content])
+              @endif
+            @endforeach
           </div>
           <!-- End Chat -->
             <!-- Footer -->
@@ -32,6 +37,7 @@
               <form>
                 <div class="input-group mb-3">
                   <input type="text" id="message" name="message" class="form-control" placeholder="Enter message..." aria-label="Enter message..." aria-describedby="button-addon2">
+                  <input type="hidden" name="chat_id" id="chat_id" value="{{ $subject->id }}">
                   <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Send</button>
                 </div>
               </form>
@@ -52,11 +58,14 @@
 
   //Receive messages
   channel.bind('chat', function (data) {
+    console.log(data);
     $.post("{{ route('chat.receive') }}", {
       _token:  '{{csrf_token()}}',
       message: data.message,
+      // chat_id: data.message,
     })
      .done(function (res) {
+        console.log(res);
        $(".messages > .message").last().after(res);
        $(document).scrollTop($(document).height());
      });
@@ -75,6 +84,7 @@
       data:    {
         _token:  '{{csrf_token()}}',
         message: $("form #message").val(),
+        chat_id: $("form #chat_id").val(),
       }
     }).done(function (res) {
       $(".messages > .message").last().after(res);
