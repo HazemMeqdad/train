@@ -15,12 +15,8 @@
 
           <!-- Header -->
           <div class="top">
-            @if (!empty(Auth::user()->gravatar))
-            <img src="{{ Auth::user()->gravatar }}" alt="Avatar">
-            @endif
             <div>
-              <p>{{ $subject->name }}</p>
-              <small>Online</small>
+              <p class="fs-1">{{ $subject->name }} chat</p>
             </div>
           </div>
           <!-- End Header -->
