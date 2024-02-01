@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PusherController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -39,3 +40,10 @@ Route::prefix("/admin")->group(function () {
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// Pusher
+Route::prefix("/chat")->group(function () {
+    Route::get('/', [PusherController::class, "index"])->name('chat');
+    Route::post("/broadcast", [PusherController::class, "broadcast"])->name("chat.broadcast");
+    Route::post("/receive", [PusherController::class, "receive"])->name("chat.receive");
+});

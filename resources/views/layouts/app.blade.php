@@ -15,6 +15,8 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    @yield('css')
 </head>
 <body>
     <div id="app">
@@ -53,16 +55,15 @@
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
-                                {{-- TODO: fix this --}}
-                                @if (Auth::user()->admin)
-                                    <div class="dropdown-menu dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{{ route('logout') }}">
-                                            Administrator
-                                        </a>
-                                    </div>
-                                @endif
-
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    @if (Auth::user()->role == "admin")
+                                        <a class="dropdown-item" href="{{ route('admin') }}">
+                                            Admin
+                                        </a>
+                                    @endif
+                                    <a class="dropdown-item" href="{{ route('chat') }}">
+                                        Chat
+                                    </a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
