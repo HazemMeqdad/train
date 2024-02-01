@@ -33,6 +33,8 @@ Route::prefix("/admin")->group(function () {
     Route::post("/subject/assign", [AdminController::class, "assign_subject"])->name("subject.assign");
     
     Route::get("/subjects", [AdminController::class, "get_subjects"])->name("subjects");
+
+    Route::post("/set-mark", [AdminController::class, "set_mark"])->name("user.mark");
 });
 
 

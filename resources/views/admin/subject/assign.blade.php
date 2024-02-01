@@ -4,8 +4,6 @@
 
     <div class="row mb-3">
         <div class="col-md-6 offset-md-4">
-            {{-- <label for="select-menu" class="col-md-4 col-form-label text-md-end">Select student</label> --}}
-
             <select id="select-menu" class="form-select form-control" name="student_id" aria-label="Default select example">
                 <option selected>Select student</option>
                 @foreach ($users as $user)

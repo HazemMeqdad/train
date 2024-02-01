@@ -22,7 +22,8 @@ class AdminController extends Controller
     public function index(Request $request)
     {
         $users = User::all();
-        return view('admin/index', ['users'=>$users]);
+        $subjects = Subject::all();
+        return view('admin/index', ['users'=>$users, "subjects" => $subjects]);
     }
 
     public function edit_user(Request $request, int $id = null) {
@@ -105,5 +106,25 @@ class AdminController extends Controller
         $users = User::all()->except(Auth::id());;
         // dd($subjects);
         return view("admin/subjects", ["users" => $users, "subjects" => $subjects]);
+    }
+
+    public function set_mark(Request $request) {
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'student_id' => ['required', 'integer'],
+            'subject_id' => ['required', 'integer'],
+            'mark' => ['required', 'integer'],
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["errors"=>$validator->errors()], 422);
+        } else {
+            Mark::where([
+                "student_id" => $data["student_id"],
+                'subject_id' => $data['subject_id'],
+            ])->update([
+                'mark' => $data['mark'],
+            ]);
+            return response()->json(["message"=> "Mark set successfully"]);
+        }
     }
 }

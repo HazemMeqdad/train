@@ -12,4 +12,9 @@ class Subject extends Model
         'name',
         'min_mark',
     ];
+
+    public function students() 
+    {
+        return $this->hasMany(Mark::class, "student_id");
+    }
 }

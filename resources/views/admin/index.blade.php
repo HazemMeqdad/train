@@ -22,7 +22,10 @@
                                 <th scope="row">{{ $user->id }}</th>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>{{ $user->subjects }}</td>
+                                <td>@foreach($user->subjects as $subject)
+                                    {{$subject->subject->name}},
+                                    @endforeach
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-secondary btn-sm edit-user" data-user-id="{{ $user->id }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}" data-active="{{ $user->active }}">Edit</button>
                                     <button type="button" class="btn btn-danger btn-sm delete-user" data-user-id="{{ $user->id }}">Delete</button>
@@ -33,20 +36,67 @@
                         </table>
                 </div>
             </div>
-            <br>
-            <div class="card bg-light">
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">{{ __('Subjects') }}</div>
                 <div class="card-body">
-                    <button type="button" class="btn btn-outline-secondary" id="create-user">Create User</button>
-                    <button type="button" class="btn btn-outline-secondary" id="create-subject">Create Subject</button>
-                    <a href="{{ route('subjects') }}">
-                        <button type="button" class="btn btn-outline-secondary">Assign subject</button>
-                    </a>
-                    <button type="button" class="btn btn-outline-secondary">Set Mark</button>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">name</th>
+                            <th scope="col">Minimum mark</th>
+                            <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($subjects as $subject)
+                            <tr>
+                                <th scope="row">{{ $subject->id }}</th>
+                                <td>{{ $subject->name }}</td>
+                                <td>{{ $subject->min_mark }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-secondary btn-sm assign-subject" data-subject-id="{{ $subject->id }}">Assign the subject</button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <button type="button" class="btn btn-outline-secondary" id="create-user">Create User</button>
+                    <button type="button" class="btn btn-outline-secondary" id="create-subject">Create Subject</button>
+                    {{-- <a href="{{ route('subjects') }}">
+                        <button type="button" class="btn btn-outline-secondary">Assign subject</button>
+                    </a> --}}
+                    <button type="button" class="btn btn-outline-secondary" id='set-mark'>Set Mark</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{-- Delete modal --}}
 <div class="modal" tabindex="-1" role="dialog" id="delete_modal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -70,6 +120,7 @@
     </div>
 </div>
 
+{{-- Register modal --}}
 <div class="modal" tabindex="-1" role="dialog" id="register_modal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -85,6 +136,7 @@
     </div>
 </div>
 
+{{-- Edit user modal --}}
 <div class="modal" tabindex="-1" role="dialog" id="edit_modal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -115,6 +167,40 @@
       </div>
     </div>
 </div>
+
+
+{{-- Assign subject modal --}}
+<div class="modal" tabindex="-1" role="dialog" id="assign_modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Assign subject</h5>
+          <button type="button" class="btn-close">
+        </button>
+        </div>
+        <div class="modal-body">
+          @include("admin/subject/assign", ["users" => $users, "subjects" => $subjects])
+        </div>
+      </div>
+    </div>
+</div>
+
+{{-- Set mark modal --}}
+<div class="modal" tabindex="-1" role="dialog" id="set-mark-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Set mark</h5>
+          <button type="button" class="btn-close">
+        </button>
+        </div>
+        <div class="modal-body">
+          @include("admin/user/setmark")
+        </div>
+      </div>
+    </div>
+</div>
+
 @endsection
 @section("js")
 <script>
@@ -154,7 +240,18 @@ $('#create-subject').on("click", (event) => {
     $("#subject_modal").modal("toggle");
 });
 
+// Set mark
+$("#set-mark").on("click", () => {
+    $("#set-mark-modal").modal("toggle");
+})
+
 // Assign
-$("#multiple-checkboxes")
+$(".assign-subject").on("click", (event) => {
+    console.log("Cliked");
+    $("#assign_modal").modal("toggle");
+    const id = $(event.target).attr("data-subject-id");
+    
+    $("#user-id").val(id);
+})
 </script>
 @endsection
