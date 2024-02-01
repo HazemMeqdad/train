@@ -155,6 +155,7 @@
     box-sizing: border-box;
     padding: 1rem 0 !important;
     border-top: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    margin: 10px;
   }
   .chat .bottom input {
     float: left;
@@ -172,18 +173,6 @@
     line-height: 26px;
     border-radius: 6px;
     color: #3c4858 !important;
-  }
-  .chat .bottom button {
-    float: right;
-    display: inline-flex;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid #484848;
-    border-radius: 5px;
-    margin: 3px;
-    width: 2.35rem;
-    height: 2.35rem;
-    background: url("https://assets.edlin.app/icons/font-awesome/paper-plane/paper-plane-regular.svg") center no-repeat;
   }
   
   
