@@ -61,6 +61,9 @@
                                             Admin
                                         </a>
                                     @endif
+                                    <a class="dropdown-item" href="{{ route('home') }}">
+                                        Home
+                                    </a>
                                     <a class="dropdown-item" href="{{ route('chat') }}">
                                         Chat
                                     </a>
