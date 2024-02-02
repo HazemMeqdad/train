@@ -96,7 +96,7 @@
             var e = this;
             const submit_name = $(this).find("[type='submit']").text();
             $(this).find("[type='submit']").html(`${submit_name}...`);
-    
+            // console.log($(this).serialize());
             $.ajax({
                 url: $(this).attr('action'),
                 data: $(this).serialize(),

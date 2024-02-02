@@ -232,6 +232,9 @@ $('.edit-user').on("click", (event) => {
     $("#edit_modal").find('#formHandler').attr('action', "{{ route("user.edit") }}" + `/${userid}`);
     $("#edit_modal").find("#email").val(email);
     $("#edit_modal").find("#active").val(active);
+    if (active == 1) {
+      $("#edit_modal").find("#active").prop("checked", active);
+    }
     $("#edit_modal").find("#name").val(name);
 });
 
