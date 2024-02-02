@@ -54,7 +54,8 @@
 <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 <script>
   const pusher  = new Pusher('{{config('broadcasting.connections.pusher.key')}}', {cluster: '{{config('broadcasting.connections.pusher.options.cluster')}}'});
-  const channel = pusher.subscribe('public');
+  
+  const channel = pusher.subscribe('channel.{{ $subject->id }}');
 
   //Receive messages
   channel.bind('chat', function (data) {

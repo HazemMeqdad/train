@@ -43,7 +43,8 @@ class PusherController extends Controller
             "author" => $user->id,
             "subject" => $request["chat_id"],
         ]);
-        broadcast(new PusherBroadcast($request->get("message")))->toOthers();
+        
+        broadcast(new PusherBroadcast($request->get("message"), $request["chat_id"]))->toOthers();
         return view("chat/broadcast", ["message" => $request->get("message"), "user"=>$user]);
     }
     public function receive(Request $request) {
