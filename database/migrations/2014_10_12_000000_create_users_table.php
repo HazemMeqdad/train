@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean("active")->default(false);
             $table->enum("role", ["admin", "student"])->default("student");
             $table->string('password');
+            $table->softDeletes(); 
             $table->rememberToken();
             $table->timestamps();
         });

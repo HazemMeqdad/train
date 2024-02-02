@@ -92,11 +92,10 @@
     <script type="text/javascript">
     $(function() {
 
-        $(document).on("submit", "#formHandler", function() {
+        $(document).on("submit", "#formHandler", function(event) {
             var e = this;
             const submit_name = $(this).find("[type='submit']").text();
             $(this).find("[type='submit']").html(`${submit_name}...`);
-            // console.log($(this).serialize());
             $.ajax({
                 url: $(this).attr('action'),
                 data: $(this).serialize(),
@@ -109,7 +108,7 @@
                     }
                     if (data.message) {
                         // Remove all modals
-                        $(".modal").remove();
+                        $(".modal").modal("hide");
                         // Remove modal backdrop
                         $(".modal-backdrop").remove();
                         location.reload();
@@ -119,11 +118,12 @@
                 complete:function(data) {
                     $(e).find("[type='submit']").html(submit_name);
                 },
-                error: function(err){
-                    console.log(err)
+                error: function(xhr, status, error){
+                    var err = eval("(" + xhr.responseText + ")");
                     $(".alert").remove();
-                        $.each(err.responseJSON.errors, function (key, val) {
-                          $("#errors-list").append("<div class='alert alert-danger'>" + val + "</div>");
+                        $.each(err.errors, function (key, val) {
+                            console.log(typeof $("#errors-list"))
+                            $(event.target).find("#errors-list").append("<div class='alert alert-danger'>" + val + "</div>");
                         });
                     }
                 })    

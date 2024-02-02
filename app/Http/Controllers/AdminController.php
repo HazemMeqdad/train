@@ -25,29 +25,27 @@ class AdminController extends Controller
     }
 
     public function edit_user(Request $request, int $id = null) {
-        $user = User::find($id);
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'name' => ["required", 'string', 'min:8', 'max:255'],
             'email' => ["required", 'string', 'email', 'max:255'],
-            'active' => ["required", 'boolean'],
-        ], [
-            'unique' => 'The :attribute already been registered.',
-            'regex'  => 'The :attribute must be hard.',
-        ]);
-        if($validator->fails()) {
-            return response()->json(["message"=> "Invlided input", "errors"=>$validator->errors()], 422);
-        }
-        else {
-            $user->active = $request->active;
-            $user->save();
+            'active' => ['boolean'],
+        ];
+        $request->validate($rules);
+        try {
+            $user = User::findOrFail($id); 
+            $data = $request->all();
+            $user->update($data);
             return response()->json(["message"=>"User edit successfully"]);
+        }
+        catch (\Exception $e) {
+            return response()->json(["errors"=>["update" => "Update failed"]], 422);
         }
     }
 
     public function delete_user(int $id = null) {
         $user = User::find($id);
         $user->delete();
-        return redirect("admin");
+        return response()->json(["message"=> "Delete user successfully"]);
     }
 
     public function create_subject(Request $request) {

@@ -1,4 +1,4 @@
-<form id="formHandler" method="POST" action="{{ route('user.create') }}">
+<form id="formHandler" method="POST" action="{{ route('user.edit') }}">
     @csrf
     <div id="errors-list"></div>
 
@@ -21,8 +21,8 @@
         <label for="active" class="col-md-4 col-form-label text-md-end">{{ __('Active') }}</label>
 
         <div class="col-md-6">
-            <input class="form-check-input" type="checkbox" value="" name="active" id="active">
-
+            <input class="form-check-input" type="checkbox" id="active">
+            <input type='hidden' value='0' name='active' id="activehidden"> 
         </div>
     </div>
 

@@ -224,19 +224,33 @@ $('.delete-user').on("click", (event) => {
 
 // Edit user
 $('.edit-user').on("click", (event) => {
+  console.log("clicked")
     $("#edit_modal").modal("toggle");
     const userid = $(event.target).attr("data-user-id");
     const email = $(event.target).attr("data-email");
-    const active = $(event.target).attr("data-active");
+    const active = ($(event.target).attr("data-active") == "1") ? "1" : "0";
+    console.log(active)
     const name = $(event.target).attr("data-name");
     $("#edit_modal").find('#formHandler').attr('action', "{{ route("user.edit") }}" + `/${userid}`);
     $("#edit_modal").find("#email").val(email);
     $("#edit_modal").find("#active").val(active);
     if (active == 1) {
-      $("#edit_modal").find("#active").prop("checked", active);
+      $("#edit_modal").$("#activehidden").val(this.checked ? 1 : 0);
     }
     $("#edit_modal").find("#name").val(name);
 });
+$('#active').on('change', function () {
+    $("#activehidden").val(this.checked ? 1 : 0);
+});
+// $(document).ready(function() {
+//     $('#formHandler #active').change(function() {
+//         if ($(this).prop('checked')) {
+//             $(this).val('1');
+//         } else {
+//             $(this).val('0');
+//         }
+//     });
+// });
 
 // Create subject 
 $('#create-subject').on("click", (event) => {
