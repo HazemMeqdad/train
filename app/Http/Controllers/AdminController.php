@@ -89,18 +89,24 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return response()->json(["errors"=>$validator->errors()], 422);
         } else {
-            Mark::create([
+            $existingAssignment = Mark::where('student_id', $data['student_id'])
+            ->where('subject_id', $data['id'])
+            ->first();
+
+            if ($existingAssignment) {
+                return response()->json(["errors" => ["error" => "Assignment already exists for this student and subject"]], 422);
+            } else {
+                Mark::create([
                 'student_id' => $data['student_id'],
                 'subject_id' => $data['id'],
             ]);
-            return response()->json(["message"=> "Assign added successfully"]);
+                }
         }
     }
 
     public function get_subjects() {
         $subjects = Subject::all();
         $users = User::all()->except(Auth::id());;
-        // dd($subjects);
         return view("admin/subjects", ["users" => $users, "subjects" => $subjects]);
     }
 
