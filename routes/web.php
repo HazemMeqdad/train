@@ -43,8 +43,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 // Pusher
 Route::prefix("/chat")->group(function () {
-    Route::get('/{chat_id?}', [PusherController::class, "index"])->name('chat');
-    Route::get('/admin', [PusherController::class, "admin_chat"])->name('chat.admin');
+    Route::get('/channel/{chat_id?}', [PusherController::class, "index"])->name('chat');
+    Route::get('/admin-channel', [PusherController::class, "admin_chat"])->name('chat.admin');
     Route::post("/broadcast", [PusherController::class, "broadcast"])->name("chat.broadcast");
     Route::post("/receive", [PusherController::class, "receive"])->name("chat.receive");
+
+    Route::post("/broadcast/admin", [PusherController::class, "admin_broadcast"])->name("chat.admin.broadcast");
+    Route::post("/receive/admin", [PusherController::class, "admin_receive"])->name("chat.admin.receive");
 });

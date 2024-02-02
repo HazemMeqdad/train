@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Subject;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,16 +10,16 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class PusherBroadcast implements ShouldBroadcast
+class AdminPusherBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $message;
-    public string $chat_id;
+    public int $chat_id;
     /**
      * Create a new event instance.
      */
-    public function __construct(string $message, string $chat_id)
+    public function __construct(string $message, int $chat_id)
     {
         $this->message = $message;
         $this->chat_id = $chat_id;
@@ -34,7 +33,7 @@ class PusherBroadcast implements ShouldBroadcast
     
     public function broadcastOn(): array
     {
-        return [$this->chat_id];
+        return ["admin.".$this->chat_id];
     }
     public function broadcastAs(): string
     {
