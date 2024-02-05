@@ -240,15 +240,6 @@ $('.edit-user').on("click", (event) => {
 $('#active').on('change', function () {
     $("#activehidden").val(this.checked ? 1 : 0);
 });
-// $(document).ready(function() {
-//     $('#formHandler #active').change(function() {
-//         if ($(this).prop('checked')) {
-//             $(this).val('1');
-//         } else {
-//             $(this).val('0');
-//         }
-//     });
-// });
 
 // Create subject 
 $('#create-subject').on("click", (event) => {
@@ -259,6 +250,47 @@ $('#create-subject').on("click", (event) => {
 $("#set-mark").on("click", () => {
     $("#set-mark-modal").modal("toggle");
 })
+$('#select-mark-student').on('change', function () {
+    var selectedStudent = $(this).find(':selected');
+    var subjectsData = selectedStudent.data('subjects');
+
+    if (subjectsData) {
+        $('#select-subject').empty();
+        $('#select-subject').append('<option selected>Select Subject</option>');
+
+        $.each(subjectsData, function (index, subject) {
+            $('#select-subject').append('<option value="' + subject.subject.id + '">' + subject.subject.name + '</option>');
+        });
+
+    } else {
+        // Handle the case where there is no data-subjects attribute
+        console.log('No subjects data available');
+    }
+});
+
+// $('#select-mark-student').on('change', function () {
+//     var studentId = $(this).val();
+//     const data_subjects = $(event.target).attr("data-subjects");
+//     console.log(data_subjects);
+//     console.log(event.target);
+    // if (studentId) {
+    //     $.ajax({
+    //         url: '/get-subjects/' + studentId, // Replace with your route to fetch subjects for the selected student
+    //         type: 'GET',
+    //         dataType: 'json',
+    //         success: function (data) {
+    //             $('#select-subject').empty();
+    //             $('#select-subject').append('<option selected>Select Subject</option>');
+    //             $.each(data, function (key, value) {
+    //                 $('#select-subject').append('<option value="' + value.id + '">' + value.name + '</option>');
+    //             });
+    // //         }
+    //     });
+    // } else {
+    //     $('#select-subject').empty();
+    //     $('#select-subject').append('<option selected>Select Subject</option>');
+    // }
+// });
 
 // Assign
 $(".assign-subject").on("click", (event) => {
