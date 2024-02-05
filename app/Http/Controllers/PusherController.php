@@ -80,7 +80,10 @@ class PusherController extends Controller
 
         // Normal chat
         $subjects = $request->user()->subjects;
-        $students = collect();
+        $students = collect(User::where("role", "admin")->get()->map(function ($usr){
+            $usr->channel = $this->get_chat_id(Auth::user(), $usr);
+            return $usr;
+        }));
         // Get all users bettween subjects
         foreach ($subjects as $mark) {
             $sub = $mark->subject;
