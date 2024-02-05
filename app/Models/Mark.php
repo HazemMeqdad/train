@@ -12,7 +12,15 @@ class Mark extends Model
     protected $fillable = [
         'student_id',
         'subject_id',
+        "mark",
+        "student",
+        "subject",
     ];
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
+
     public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id');

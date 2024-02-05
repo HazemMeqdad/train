@@ -17,4 +17,8 @@ class Subject extends Model
     {
         return $this->hasMany(Mark::class, "student_id");
     }
+    public function users()
+    {
+        return $this->hasManyThrough(User::class, Mark::class, "subject_id", "id", "id", "student_id");
+    }
 }

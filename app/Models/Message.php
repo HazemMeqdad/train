@@ -9,18 +9,18 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        "author",
-        "subject",
+        "sender",
+        "receiver",
         "content"
     ];
 
-    public function user()
+    public function sender()
     {
-        return $this->belongsTo(User::class, "author");
+        return $this->belongsTo(User::class, "sender");
     }
 
-    public function messageSubject()
+    public function receiver()
     {
-        return $this->belongsTo(Subject::class, "subject");
+        return $this->belongsTo(User::class, "receiver");
     }
 }

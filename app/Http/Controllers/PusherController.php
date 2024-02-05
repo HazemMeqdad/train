@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Events\AdminPusherBroadcast;
 use App\Events\PusherBroadcast;
 use App\Models\AdminMessage;
+use App\Models\Mark;
 use App\Models\Message;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Type\Integer;
 
 class PusherController extends Controller
@@ -20,6 +22,7 @@ class PusherController extends Controller
     }
 
     public function index(Request $request, int $chat_id = null) {
+        // Load admin page
         if ($request->user()->role == "admin") {
             $users = User::all();
             if (!$chat_id) {
@@ -35,19 +38,31 @@ class PusherController extends Controller
                 ->get();;
             return view("chat/admin", compact("users", "user", "messages"));
         }
+        // Normal chat
+        $subjects = $request->user()->subjects;
+        $students = collect();
+        foreach ($subjects as $mark) {
+            $sub = $mark->subject;
+            $students = $students->merge($sub->users);
+        }
+        $chats = $students->unique('id');
         if (!$chat_id) {
-            if ($request->user()->subjects->count() == 0) {
+            if ($chats->count() == 0) {
                 return response()->view("errors/message", ["message" => "You don't have any chat subject"]);
             }
-            return response()->redirectToRoute("chat", ["chat_id" => $request->user()->subjects[0]->subject->id]);
+            return response()->redirectToRoute("chat", ["chat_id" => $chats[0]->id]);
         }
-        $subject = Subject::find($chat_id);
-        $messages = Message::where('subject', $chat_id)
-        ->with('user')
-        ->with('messageSubject')
-        ->orderBy('created_at', 'asc')
-        ->get();
-        return view("chat/index", ["subject" => $subject, "messages" => $messages]);
+        $senderId = $chat_id;
+        $receiverId = Auth::user()->id;
+
+        $messages = Message::where(function ($query) use ($senderId, $receiverId) {
+            $query->where('sender', $senderId)->where('receiver', $receiverId);
+        })->orWhere(function ($query) use ($senderId, $receiverId) {
+            $query->where('sender', $receiverId)->where('receiver', $senderId);
+        })->get();
+
+        $chat = User::find($chat_id);
+        return view("chat/index", ["chats" => $chats, "chat" => $chat, "messages" => $messages]);
     }
 
     public function admin_chat(Request $request) {

@@ -12,8 +12,8 @@
             <a href="{{ route("chat.admin") }}"><button class="btn">Admin</button></a>
         </div>
       </div>
-        @foreach(Auth::user()->subjects as $sub)
-          @include("chat.group", ["subject" => $sub->subject])
+        @foreach($chats as $me_chat)
+          @include("chat.group", ["chat" => $me_chat])
         @endforeach
       @else
         @foreach ($users as $user) 
@@ -28,7 +28,7 @@
           <!-- Header -->
           <div class="top">
             <div>
-              <p class="fs-1">{{ $subject->name }} chat</p>
+              <p class="fs-1">{{ $chat->name }} chat</p>
             </div>
           </div>
           <!-- End Header -->
@@ -49,7 +49,7 @@
               <form>
                 <div class="input-group mb-3">
                   <input type="text" id="message" name="message" class="form-control" placeholder="Enter message..." aria-label="Enter message..." aria-describedby="button-addon2">
-                  <input type="hidden" name="chat_id" id="chat_id" value="{{ $subject->id }}">
+                  <input type="hidden" name="chat_id" id="chat_id" value="{{ $chat->id }}">
                   <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Send</button>
                 </div>
               </form>
@@ -67,7 +67,7 @@
 <script>
   const pusher  = new Pusher('{{config('broadcasting.connections.pusher.key')}}', {cluster: '{{config('broadcasting.connections.pusher.options.cluster')}}'});
   
-  const channel = pusher.subscribe('channel.{{ $subject->id }}');
+  const channel = pusher.subscribe('channel.{{ $chat->id }}');
 
   //Receive messages
   channel.bind('chat', function (data) {
