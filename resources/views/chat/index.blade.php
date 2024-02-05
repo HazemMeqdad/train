@@ -30,7 +30,7 @@
               @if ($message->senderUser->id == Auth::user()->id)
                 @include('chat/broadcast', ["user" => $message->senderUser, 'message' => $message->content])
               @else
-                @include('chat/receive', ["user" => $message->receiverUser, 'message' => $message->content])
+                @include('chat/receive', ["user" => $message->senderUser, 'message' => $message->content])
               @endif
             @endforeach
           </div>

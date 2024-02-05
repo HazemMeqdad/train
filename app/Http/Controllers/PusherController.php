@@ -28,9 +28,7 @@ class PusherController extends Controller
     }
 
     private function get_chat_id(User $usr1, User $usr2): string {
-        $user1 = Auth::user();
-        $user2 = $usr2; 
-        $sortedUserIds = [$user1->id, $user2->id];
+        $sortedUserIds = [$usr1->id, $usr2->id];
         sort($sortedUserIds);
         $channelName = $sortedUserIds[0] . '.' . $sortedUserIds[1];
         return $channelName;
@@ -65,7 +63,7 @@ class PusherController extends Controller
             $query->where('sender', $otheruser)->where('receiver', $receiverId);
         })->orWhere(function ($query) use ($otheruser, $receiverId) {
             $query->where('sender', $receiverId)->where('receiver', $otheruser);
-        })->get();
+        })->orderBy('created_at', 'asc')->get();
         
         $channel = $this->get_chat_channel(Auth::user(), $chat);
 
@@ -113,7 +111,7 @@ class PusherController extends Controller
             $query->where('sender', $otheruser)->where('receiver', $receiverId);
         })->orWhere(function ($query) use ($otheruser, $receiverId) {
             $query->where('sender', $receiverId)->where('receiver', $otheruser);
-        })->get();
+        })->orderBy('created_at', 'asc')->get();
 
         return view("chat/index", ["chats" => $chats, "chat" => $receiver, "messages" => $messages, "channel" => $channel]);
     }
