@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\AdminPusherBroadcast;
 use App\Events\PusherBroadcast;
 use App\Models\AdminMessage;
+use App\Models\Chat;
 use App\Models\Mark;
 use App\Models\Message;
 use App\Models\Subject;
@@ -21,99 +22,113 @@ class PusherController extends Controller
         $this->middleware("auth");
     }
 
-    public function index(Request $request, int $chat_id = null) {
+    private function get_chat_channel(User $usr1, User $usr2): string {
+
+        return "channel.".$this->get_chat_id($usr1, $usr2);
+    }
+
+    private function get_chat_id(User $usr1, User $usr2): string {
+        $user1 = Auth::user();
+        $user2 = $usr2; 
+        $sortedUserIds = [$user1->id, $user2->id];
+        sort($sortedUserIds);
+        $channelName = $sortedUserIds[0] . '.' . $sortedUserIds[1];
+        return $channelName;
+    }
+
+    private function get_chat_receiver(User $usr, string $channel): int {
+        $args = explode('.', $channel);
+        $usr1 = (int)$args[1];
+        $usr2 = (int)$args[2];
+        if ($usr1 != $usr->id) {
+            return $usr1;
+        }
+        return $usr2;
+    }
+
+    private function admin_chat(Request $request, string $chat_id = null) {
+        $chats = User::all()->map(function ($usr) {
+            $usr->channel = $this->get_chat_id(Auth::user(), $usr);
+            return $usr;
+        });
+        if (!$chat_id) {
+            if ($request->user()->subjects->count() == 0) {
+                return response()->view("errors/message", ["message" => "You don't have any student"]);
+            }
+            return response()->redirectToRoute("chat", ["chat_id" => $chats[0]->channel]);
+        }
+        $otheruser = $this->get_chat_receiver(Auth::user(), "channel.".$chat_id);
+        $chat = User::find($otheruser);
+        $receiverId = Auth::user()->id;
+
+        $messages = Message::where(function ($query) use ($otheruser, $receiverId) {
+            $query->where('sender', $otheruser)->where('receiver', $receiverId);
+        })->orWhere(function ($query) use ($otheruser, $receiverId) {
+            $query->where('sender', $receiverId)->where('receiver', $otheruser);
+        })->get();
+        
+        $channel = $this->get_chat_channel(Auth::user(), $chat);
+
+        return view("chat/index", compact("chats", "chat", "messages", "channel"));
+    }
+
+    public function index(Request $request, string $chat_id = null) {
         // Load admin page
         if ($request->user()->role == "admin") {
-            $users = User::all();
-            if (!$chat_id) {
-                if ($request->user()->subjects->count() == 0) {
-                    return response()->view("errors/message", ["message" => "You don't have any student"]);
-                }
-                return response()->redirectToRoute("chat", ["chat_id" => $users[0]->id]);
-            }
-            $user = User::find($chat_id);
-            $messages = AdminMessage::where('student', $chat_id)
-                ->with('user')
-                ->orderBy('created_at', 'asc')
-                ->get();;
-            return view("chat/admin", compact("users", "user", "messages"));
+            return $this->admin_chat($request, $chat_id);
         }
+
         // Normal chat
         $subjects = $request->user()->subjects;
         $students = collect();
+        // Get all users bettween subjects
         foreach ($subjects as $mark) {
             $sub = $mark->subject;
-            $students = $students->merge($sub->users);
+            $students = $students->merge($sub->users->map(function ($usr){
+                $usr->channel = $this->get_chat_id(Auth::user(), $usr);
+                return $usr;
+            }));
         }
         $chats = $students->unique('id');
+
+        // If not enter chat_id
         if (!$chat_id) {
             if ($chats->count() == 0) {
                 return response()->view("errors/message", ["message" => "You don't have any chat subject"]);
             }
-            return response()->redirectToRoute("chat", ["chat_id" => $chats[0]->id]);
+            
+            return response()->redirectToRoute("chat", ["chat_id" => $chats[0]->channel]);
         }
-        $senderId = $chat_id;
+
+        $chat_id = "channel.".$chat_id;
+        $otheruser = $this->get_chat_receiver(Auth::user(), $chat_id);
+        $receiver = User::find($otheruser);
+        $channel = $this->get_chat_channel(Auth::user(), $receiver);
         $receiverId = Auth::user()->id;
 
-        $messages = Message::where(function ($query) use ($senderId, $receiverId) {
-            $query->where('sender', $senderId)->where('receiver', $receiverId);
-        })->orWhere(function ($query) use ($senderId, $receiverId) {
-            $query->where('sender', $receiverId)->where('receiver', $senderId);
+        $messages = Message::where(function ($query) use ($otheruser, $receiverId) {
+            $query->where('sender', $otheruser)->where('receiver', $receiverId);
+        })->orWhere(function ($query) use ($otheruser, $receiverId) {
+            $query->where('sender', $receiverId)->where('receiver', $otheruser);
         })->get();
 
-        $chat = User::find($chat_id);
-        return view("chat/index", ["chats" => $chats, "chat" => $chat, "messages" => $messages]);
+        return view("chat/index", ["chats" => $chats, "chat" => $receiver, "messages" => $messages, "channel" => $channel]);
     }
-
-    public function admin_chat(Request $request) {
-        $messages = AdminMessage::where('student', $request->user()->id)
-        ->with('user')
-        ->orderBy('created_at', 'asc')
-        ->get();
-        return view("chat/auser", compact("messages"));
-    }
+    
     public function broadcast(Request $request) {
-        $user = $request->user();
-        // dd($user->id);
+        $sender = $request->user();
+        $receiver = User::find($this->get_chat_receiver($sender, $request['chat_id']));
         Message::create([
             "content" => $request["message"],
-            "author" => $user->id,
-            "subject" => $request["chat_id"],
+            "sender" => $sender->id,
+            "receiver" => $receiver->id,
         ]);
-        
         broadcast(new PusherBroadcast($request->get("message"), "channel.".$request["chat_id"]))->toOthers();
-        return view("chat/broadcast", ["message" => $request->get("message"), "user"=>$user]);
+        return view("chat/broadcast", ["message" => $request->get("message"), "user"=>$sender]);
     }
     public function receive(Request $request) {
-        $user = $request->user();
-        return view("chat/receive", ["message" => $request->get("message"), "user"=>$user]);
-    }
-
-    public function admin_broadcast(Request $request) {
-        $user = $request->user();
-    
-        $validator = Validator::make($request->all(), [
-            'chat_id' => ['required', 'integer'],
-            'message' => ['required', 'string'],
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json(["errors" => $validator->errors()], 422);
-        }
-    
-        AdminMessage::create([
-            "student" => $request["chat_id"],
-            "message" => $request["message"],
-            "author" => $request->user()->id,
-        ]);
-    
-        broadcast(new PusherBroadcast($request->get("message"), "admin.".$request["chat_id"]))->toOthers();
-    
-        return view("chat/broadcast", ["message" => $request->get("message"), "user" => $user]);
-    }
-    
-    public function admin_receive(Request $request) {
-        $user = $request->user();
-        return view("chat/receive", ["message" => $request->get("message"), "user"=>$user]);
+        $receive = $request->user();
+        $receiver = User::find($this->get_chat_receiver($receive, $request['chat_id']));
+        return view("chat/receive", ["message" => $request->get("message"), "user"=>$receiver]);
     }
 }

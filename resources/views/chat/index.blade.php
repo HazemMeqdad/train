@@ -6,20 +6,11 @@
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md chat">
-      @if (Auth::user()->role != "admin")
-      <div class="card m-2">
-        <div class="card-body p-2">
-            <a href="{{ route("chat.admin") }}"><button class="btn">Admin</button></a>
-        </div>
-      </div>
-        @foreach($chats as $me_chat)
-          @include("chat.group", ["chat" => $me_chat])
-        @endforeach
-      @else
-        @foreach ($users as $user) 
-          @include("chat.user", ["user" => $user])
-        @endforeach
-      @endif
+      @foreach($chats as $me_chat)
+        @if ($me_chat->id != Auth::user()->id)
+        @include("chat.group", ["chat" => $me_chat])
+        @endif
+      @endforeach
 
     </div>
       <div class="col-md-8">
@@ -36,10 +27,10 @@
           <!-- Chat -->
           <div class="messages">
             @foreach($messages as $message)
-              @if ($message->user->id == Auth::user()->id)
-                @include('chat/broadcast', ["user" => $message->user, 'message' => $message->content])
+              @if ($message->senderUser->id == Auth::user()->id)
+                @include('chat/broadcast', ["user" => $message->senderUser, 'message' => $message->content])
               @else
-                @include('chat/receive', ["user" => $message->user, 'message' => $message->content])
+                @include('chat/receive', ["user" => $message->receiverUser, 'message' => $message->content])
               @endif
             @endforeach
           </div>
@@ -49,7 +40,7 @@
               <form>
                 <div class="input-group mb-3">
                   <input type="text" id="message" name="message" class="form-control" placeholder="Enter message..." aria-label="Enter message..." aria-describedby="button-addon2">
-                  <input type="hidden" name="chat_id" id="chat_id" value="{{ $chat->id }}">
+                  <input type="hidden" name="chat_id" id="chat_id" value="{{ $channel }}">
                   <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Send</button>
                 </div>
               </form>
@@ -67,7 +58,7 @@
 <script>
   const pusher  = new Pusher('{{config('broadcasting.connections.pusher.key')}}', {cluster: '{{config('broadcasting.connections.pusher.options.cluster')}}'});
   
-  const channel = pusher.subscribe('channel.{{ $chat->id }}');
+  const channel = pusher.subscribe('channel.{{ $channel }}');
 
   //Receive messages
   channel.bind('chat', function (data) {
@@ -75,7 +66,7 @@
     $.post("{{ route('chat.receive') }}", {
       _token:  '{{csrf_token()}}',
       message: data.message,
-      // chat_id: data.message,
+      chat_id: `{{$channel}}`,
     })
      .done(function (res) {
         console.log(res);
