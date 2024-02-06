@@ -7,13 +7,16 @@
 @section("content")
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md chat msger">
-            @foreach($chats as $me_chat)
-                @if ($me_chat->id != Auth::user()->id)
-                    @include("chat.group", ["chat" => $me_chat])
-                @endif
-            @endforeach
-        </div>
+        <section class="h-50 d-inline-block col-md chat-side">
+          <p class="chat-title">Friends</p>
+            <div class="d-grid chat-list">
+              @foreach($chats as $me_chat)
+                  @if ($me_chat->id != Auth::user()->id)
+                      @include("chat.group", ["chat" => $me_chat])
+                  @endif
+              @endforeach
+            </div>
+        </section>
 
         <div class="col-md-8">
             <section class="msger">

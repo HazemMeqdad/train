@@ -59,8 +59,8 @@
 }
 
 .msg-img {
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   margin-right: 10px;
   background: #ddd;
   background-repeat: no-repeat;
@@ -71,7 +71,7 @@
 
 .msg-bubble {
   max-width: 450px;
-  padding: 15px;
+  padding: 10px;
   border-radius: 15px;
   background: var(--left-msg-bg);
 }
@@ -225,4 +225,51 @@ word-wrap: break-word;
 box-sizing: border-box;
 font-size: 0.875em;
 color: #6c757d !important;
+}
+
+.user-img {
+  margin-right: 10px;
+}
+
+.user-card:hover {
+  background-color: #eae9e9;
+  transition: 100ms;
+}
+
+.chat-side {
+  background-color: #eee;
+  border: var(--border);
+  border-radius: 5px;
+  box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+  padding: 0px;
+  margin: 0px;
+  position:static;
+  margin-top: 25px;
+}
+
+.chat-list {
+  margin: 0;
+  height: 350px;
+  overflow-y: scroll;
+}
+
+.chat-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-list::-webkit-scrollbar-track {
+  background: #ddd;
+}
+
+.chat-list::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+}
+
+.chat-title {
+  display: flex;
+  justify-content: center;
+  color: #666;
+  background: #eee;
+  padding: 10px;
+  border-bottom: var(--border);
 }
