@@ -13,7 +13,7 @@
   width: 100%;
   max-width: 867px;
   margin: 25px 10px;
-  height: calc(100% - 50px);
+  height: calc(100% - 26px);
   border: var(--border);
   border-radius: 5px;
   background: var(--msger-bg);
@@ -249,7 +249,7 @@ color: #6c757d !important;
 
 .chat-list {
   margin: 0;
-  height: 350px;
+  height: 435px;
   overflow-y: scroll;
 }
 

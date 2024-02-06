@@ -30,7 +30,7 @@
                 </header>
 
                 <main>
-                  <div class="overflow-auto msger-chat" id="chat-messages" style="height: 300px;">
+                  <div class="overflow-y msger-chat" id="chat-messages" style="height: 363px;">
                     @foreach($messages as $message)
                       @if ($message->senderUser->id == Auth::user()->id)
                         @include('chat.broadcast', ["user" => $message->senderUser, 'message' => $message->content])
