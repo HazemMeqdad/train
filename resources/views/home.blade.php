@@ -35,7 +35,7 @@
                         <tbody>
                             @foreach(Auth::user()->subjects as $subject)
                             <tr>
-                                <th scope="row">{{ $subject->id }}</th>
+                                <th scope="row">{{ $subject->subject->id }}</th>
                                 <td>{{ $subject->subject->name }}</td>
                                 <td>
                                     @if ($subject->mark == 0)
