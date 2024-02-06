@@ -21,7 +21,7 @@
         <label for="active" class="col-md-4 col-form-label text-md-end">{{ __('Active') }}</label>
 
         <div class="col-md-6">
-            <input class="form-check-input" type="checkbox" id="active">
+            <input class="form-check-input" type="checkbox" id="active" value="0">
             <input type='hidden' value='0' name='active' id="activehidden"> 
         </div>
     </div>

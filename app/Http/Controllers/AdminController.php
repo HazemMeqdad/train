@@ -28,7 +28,7 @@ class AdminController extends Controller
         $rules = [
             'name' => ["required", 'string', 'min:8', 'max:255'],
             'email' => ["required", 'string', 'email', 'max:255'],
-            'active' => ['boolean'],
+            'active' => ["required", 'boolean'],
         ];
         $request->validate($rules);
         try {
@@ -83,14 +83,14 @@ class AdminController extends Controller
     public function assign_subject(Request $request) {
         $data = $request->all();
         $validator = Validator::make($data, [
-            'id' => ['required', 'integer'],
             'student_id' => ['required', 'integer'],
+            'subject_id' => ['required', 'integer'],
         ]);
         if ($validator->fails()) {
             return response()->json(["errors"=>$validator->errors()], 422);
         } else {
             $existingAssignment = Mark::where('student_id', $data['student_id'])
-            ->where('subject_id', $data['id'])
+            ->where('subject_id', $data['subject_id'])
             ->first();
 
             if ($existingAssignment) {
@@ -98,9 +98,10 @@ class AdminController extends Controller
             } else {
                 Mark::create([
                 'student_id' => $data['student_id'],
-                'subject_id' => $data['id'],
-            ]);
+                'subject_id' => $data['subject_id'],
+                ]);
                 }
+            return response()->json(["message"=> "Assing set successfully"]);
         }
     }
 

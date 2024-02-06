@@ -54,7 +54,7 @@
                             <th scope="col">#</th>
                             <th scope="col">name</th>
                             <th scope="col">Minimum mark</th>
-                            <th scope="col">Action</th>
+                            <th scope="col">Students count</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,9 +63,7 @@
                                 <th scope="row">{{ $subject->id }}</th>
                                 <td>{{ $subject->name }}</td>
                                 <td>{{ $subject->min_mark }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-secondary btn-sm assign-subject" data-subject-id="{{ $subject->id }}">Assign the subject</button>
-                                </td>
+                                <td>{{ $subject->users->count() }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -85,9 +83,7 @@
                 <div class="card-body">
                     <button type="button" class="btn btn-outline-secondary" id="create-user">Create User</button>
                     <button type="button" class="btn btn-outline-secondary" id="create-subject">Create Subject</button>
-                    {{-- <a href="{{ route('subjects') }}">
-                        <button type="button" class="btn btn-outline-secondary">Assign subject</button>
-                    </a> --}}
+                    <button type="button" class="btn btn-outline-secondary" id="assign-subject">Assign subject</button>
                     <button type="button" class="btn btn-outline-secondary" id='set-mark'>Set Mark</button>
                 </div>
             </div>
@@ -223,23 +219,27 @@ $('.delete-user').on("click", (event) => {
 });
 
 // Edit user
-$('.edit-user').on("click", (event) => {
-  console.log("clicked")
+$('.edit-user').on("click", function(event) {
     $("#edit_modal").modal("toggle");
-    const userid = $(event.target).attr("data-user-id");
-    const email = $(event.target).attr("data-email");
-    const active = ($(event.target).attr("data-active") == "1") ? "1" : "0";
-    console.log(active)
-    const name = $(event.target).attr("data-name");
-    $("#edit_modal").find('#formHandler').attr('action', "{{ route("user.edit") }}" + `/${userid}`);
+    const userid = $(this).data("user-id");
+    const email = $(this).data("email");
+    const active = $(this).data("active");
+    const name = $(this).data("name");
+
+    $("#edit_modal").find('#formHandler').attr('action', "{{ route('user.edit') }}" + `/${userid}`);
     $("#edit_modal").find("#email").val(email);
-    $("#edit_modal").find("#active").val(active);
     $("#edit_modal").find("#name").val(name);
-    $("#edit_modal").find("#activehidden").val(this.checked ? 1 : 0);
+    $("#edit_modal").find("#active").prop('checked', active == 1);
+
+    $("#activehidden").val(active == 1 ? "1" : "0");
 });
-$('#active').on('change', function () {
-    $("#activehidden").val(this.checked ? 1 : 0);
+
+$("#active").on("change", function() {
+    var state = $(this).is(':checked');
+    $(this).prop('checked', state);
+    $("#activehidden").val(state ? "1" : "0");
 });
+
 
 // Create subject 
 $('#create-subject').on("click", (event) => {
@@ -268,37 +268,28 @@ $('#select-mark-student').on('change', function () {
     }
 });
 
-// $('#select-mark-student').on('change', function () {
-//     var studentId = $(this).val();
-//     const data_subjects = $(event.target).attr("data-subjects");
-//     console.log(data_subjects);
-//     console.log(event.target);
-    // if (studentId) {
-    //     $.ajax({
-    //         url: '/get-subjects/' + studentId, // Replace with your route to fetch subjects for the selected student
-    //         type: 'GET',
-    //         dataType: 'json',
-    //         success: function (data) {
-    //             $('#select-subject').empty();
-    //             $('#select-subject').append('<option selected>Select Subject</option>');
-    //             $.each(data, function (key, value) {
-    //                 $('#select-subject').append('<option value="' + value.id + '">' + value.name + '</option>');
-    //             });
-    // //         }
-    //     });
-    // } else {
-    //     $('#select-subject').empty();
-    //     $('#select-subject').append('<option selected>Select Subject</option>');
-    // }
-// });
-
 // Assign
-$(".assign-subject").on("click", (event) => {
-    console.log("Cliked");
+const users = @json($users->toArray());
+$("#assign-subject").on("click", (event) => {
     $("#assign_modal").modal("toggle");
-    const id = $(event.target).attr("data-subject-id");
-    
-    $("#user-id").val(id);
 })
+$("#select-assign-subject").on("change", (event) => {
+  const ids = [{{ implode(',', $users->pluck('id')->toArray()) }}];
+  const selectedStudent = $(event.target).find(':selected');
+  const students = selectedStudent.data('students');
+  const studentIds = students.map(student => student.id);
+
+  $('#select-user').empty();
+  $('#select-user').append('<option selected>Select User</option>');
+  $.each(ids, function (index) {
+    if (!studentIds.includes(ids[index])) {
+      const user = users[index];
+      if (user) {
+        $('#select-user').append('<option value="' + user.id + '">' + user.name + '</option>');
+      }
+    }
+  });
+});
+
 </script>
 @endsection
