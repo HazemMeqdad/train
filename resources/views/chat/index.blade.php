@@ -1,61 +1,68 @@
 @extends("layouts.app")
+
 @section("css")
-<link rel="stylesheet" href="/chat.css">
+  <link rel="stylesheet" href="/chat.css">
 @endsection
+
 @section("content")
 <div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md chat">
-      @foreach($chats as $me_chat)
-        @if ($me_chat->id != Auth::user()->id)
-        @include("chat.group", ["chat" => $me_chat])
-        @endif
-      @endforeach
-
-    </div>
-      <div class="col-md-8">
-        <div class="chat">
-
-          <!-- Header -->
-          <div class="top">
-            <div>
-              <p class="fs-1">{{ $chat->name }} chat</p>
-            </div>
-          </div>
-          <!-- End Header -->
-
-          <!-- Chat -->
-          <div class="messages">
-            @foreach($messages as $message)
-              @if ($message->senderUser->id == Auth::user()->id)
-                @include('chat/broadcast', ["user" => $message->senderUser, 'message' => $message->content])
-              @else
-                @include('chat/receive', ["user" => $message->senderUser, 'message' => $message->content])
-              @endif
+    <div class="row justify-content-center">
+        <div class="col-md chat msger">
+            @foreach($chats as $me_chat)
+                @if ($me_chat->id != Auth::user()->id)
+                    @include("chat.group", ["chat" => $me_chat])
+                @endif
             @endforeach
-          </div>
-          <!-- End Chat -->
-            <!-- Footer -->
-            <div class="bottom">
-              <form>
-                <div class="input-group mb-3">
-                  <input type="text" id="message" name="message" class="form-control" placeholder="Enter message..." aria-label="Enter message..." aria-describedby="button-addon2">
-                  <input type="hidden" name="chat_id" id="chat_id" value="{{ $channel }}">
-                  <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Send</button>
-                </div>
-              </form>
-            </div>
-            <!-- End Footer -->
+        </div>
+
+        <div class="col-md-8">
+            <section class="msger">
+                <header class="msger-header">
+                    <div class="msger-header-title">
+                        <i class="fas fa-comment-alt"></i> {{$chat->name}}
+                    </div>
+                    <div class="msger-header-options">
+                        <span><i class="fas fa-cog"></i></span>
+                    </div>
+                </header>
+
+                <main>
+                  <div class="overflow-auto msger-chat" id="chat-messages" style="height: 300px;">
+                    @foreach($messages as $message)
+                      @if ($message->senderUser->id == Auth::user()->id)
+                        @include('chat.broadcast', ["user" => $message->senderUser, 'message' => $message->content])
+                      @else
+                        @include('chat.receive', ["user" => $message->senderUser, 'message' => $message->content])
+                      @endif
+                    @endforeach
+                  </div>
+                </main>
+
+                <form class="msger-inputarea">
+                    <input type="text" class="msger-input" id="message" name="message" placeholder="Enter your message...">
+                    <input type="hidden" name="chat_id" id="chat_id" value="{{ $channel }}">
+                    <button type="submit" class="msger-send-btn">Send</button>
+                </form>
+            </section>
         </div>
     </div>
-  </div>
 </div>
-
 @endsection
+
+
 
 @section("js")
 <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 <script>
+  function scrollToBottom() {
+    var chatMessages = document.getElementById('chat-messages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // Call scrollToBottom function when the page loads
+  window.onload = function() {
+    scrollToBottom();
+  };
   const pusher  = new Pusher('{{config('broadcasting.connections.pusher.key')}}', {cluster: '{{config('broadcasting.connections.pusher.options.cluster')}}'});
   
   const channel = pusher.subscribe('channel.{{ $channel }}');
@@ -70,7 +77,7 @@
     })
      .done(function (res) {
         console.log(res);
-       $(".messages > .message").last().after(res);
+       $(".msger-chat > .msg").last().after(res);
        $(document).scrollTop($(document).height());
      });
   });
@@ -91,7 +98,7 @@
         chat_id: $("form #chat_id").val(),
       }
     }).done(function (res) {
-      $(".messages > .message").last().after(res);
+      $(".msger-chat > .msg").last().after(res);
       $("form #message").val('');
       $(document).scrollTop($(document).height());
     });
